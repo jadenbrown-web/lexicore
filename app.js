@@ -118,6 +118,15 @@ function showView(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function focusAnswerInput() {
+  const input = $("#answer-input");
+  try {
+    input.focus({ preventScroll: true });
+  } catch {
+    input.focus();
+  }
+}
+
 function renderLibrarySummary() {
   const active = words.filter((word) => word.active);
   $("#active-count").textContent = active.length;
@@ -227,7 +236,7 @@ function nextQuestion() {
   $("#prompt-language").textContent = enToDe ? "Translate into German" : "Translate into English";
   $("#category-badge").textContent = `${word.custom ? "CUSTOM · " : ""}${word.category.toUpperCase()}`;
   updateStats();
-  requestAnimationFrame(() => input.focus());
+  requestAnimationFrame(focusAnswerInput);
 }
 
 function checkAnswer(event) {
@@ -254,9 +263,11 @@ function recordAnswer(correct, displayAnswer) {
   }
 
   const feedback = $("#feedback");
+  const input = $("#answer-input");
   feedback.textContent = correct ? "Correct. Nicely done." : `Not quite. Correct answer: ${displayAnswer}`;
   feedback.className = `feedback ${correct ? "correct" : "wrong"}`;
-  $("#answer-input").disabled = true;
+  input.disabled = false;
+  focusAnswerInput();
   $("#submit-answer").innerHTML = session.mode !== "infinite" && session.index === session.queue.length - 1
     ? 'See results <span>→</span>'
     : 'Next word <span>→</span>';
